@@ -60,14 +60,8 @@ export function CardControls() {
     showArtist,
     setShowArtist,
     showWatermark,
+    setShowWatermark,
   } = useCardParams()
-
-  const handleWatermarkToggle = (checked: boolean) => {
-    if (!checked) {
-      // User is trying to disable watermark - show PRO modal
-      setShowProModal(true)
-    }
-  }
 
   // Determine which preset is currently active (if any)
   const activePreset = Object.entries(FONT_SIZE_PRESETS).find(
@@ -294,7 +288,7 @@ export function CardControls() {
             <Switch
               id='watermark'
               checked={showWatermark}
-              onCheckedChange={handleWatermarkToggle}
+              onCheckedChange={setShowWatermark}
               className='scale-90'
             />
           </label>
