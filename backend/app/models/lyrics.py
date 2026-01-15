@@ -20,7 +20,7 @@ class Lyrics(BaseModel):
     track_name: str
     artist_name: str
     album_name: str | None = None
-    duration: int | None = None
+    duration: float | None = None
     instrumental: bool = False
     lines: list[LyricLine]
     synced: bool = False

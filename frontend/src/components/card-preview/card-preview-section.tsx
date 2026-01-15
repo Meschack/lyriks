@@ -1,27 +1,36 @@
-"use client";
+'use client'
 
-import { useRef, useMemo } from "react";
-import { useCardParams } from "@/hooks/use-card-params";
-import { useLyrics } from "@/hooks/use-lyrics";
-import { useDominantColor } from "@/hooks/use-dominant-color";
-import { useExportImage } from "@/hooks/use-export-image";
-import { CardCanvas } from "./card-canvas";
-import { CardControls } from "./card-controls";
-import { ExportButtons } from "./export-buttons";
-import type { CardTheme, CardFontSize, CardFormat } from "@/types/card";
+import { useMemo } from 'react'
+import { useCardParams } from '@/hooks/use-card-params'
+import { useLyrics } from '@/hooks/use-lyrics'
+import { useDominantColor } from '@/hooks/use-dominant-color'
+import { useExportImage } from '@/hooks/use-export-image'
+import { CardCanvas } from './card-canvas'
+import { CardControls } from './card-controls'
+import { ExportButtons } from './export-buttons'
+import type { CardTheme, CardFormat } from '@/types/card'
+
+// Sanitize string for filename (remove special chars, replace spaces with dashes)
+function sanitizeForFilename(str: string): string {
+  return str
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .slice(0, 50) // Limit length
+}
 
 export function CardPreviewSection() {
-  const cardRef = useRef<HTMLDivElement>(null);
-
   const {
     trackId,
     trackName,
     artistName,
     artworkUrl,
     selectedLines,
+    linesRange,
     theme,
     customColor,
-    fontSize,
+    fontSizePx,
     format,
     infoPosition,
     showArtwork,
@@ -31,12 +40,12 @@ export function CardPreviewSection() {
     hasTrack,
     hasSelection,
     getShareUrl,
-  } = useCardParams();
+  } = useCardParams()
 
-  const { data: lyricsData } = useLyrics(trackId, trackName, artistName);
+  const { data: lyricsData } = useLyrics(trackId, trackName, artistName)
 
   // Couleur dominante de la pochette
-  const { dominantColor } = useDominantColor(artworkUrl ?? undefined);
+  const { dominantColor } = useDominantColor(artworkUrl ?? undefined)
 
   // Extraire les lignes sélectionnées
   const selectedLyricsText = useMemo(
@@ -44,23 +53,23 @@ export function CardPreviewSection() {
       lyricsData?.lyrics?.lines
         .filter((line) => selectedLines.includes(line.index))
         .map((line) => line.text) ?? [],
-    [lyricsData, selectedLines]
-  );
+    [lyricsData, selectedLines],
+  )
 
   // Card props for export API
   const cardProps = useMemo(
     () => ({
       lyrics: selectedLyricsText,
-      trackName: trackName ?? "",
-      artistName: artistName ?? "",
+      trackName: trackName ?? '',
+      artistName: artistName ?? '',
       artworkUrl: artworkUrl ?? undefined,
       dominantColor,
       theme: theme as CardTheme,
       customColor: customColor ?? undefined,
-      fontSize: fontSize as CardFontSize,
+      fontSizePx,
       format: format as CardFormat,
-      textAlign: "left" as const,
-      infoPosition: infoPosition as "top" | "bottom",
+      textAlign: 'left' as const,
+      infoPosition: infoPosition as 'top' | 'bottom',
       showArtwork,
       showTitle,
       showArtist,
@@ -74,49 +83,48 @@ export function CardPreviewSection() {
       dominantColor,
       theme,
       customColor,
-      fontSize,
+      fontSizePx,
       format,
       infoPosition,
       showArtwork,
       showTitle,
       showArtist,
       showWatermark,
-    ]
-  );
+    ],
+  )
 
-  const {
-    exportToPngSatori,
-    exportToJpgSatori,
-    exportToPngHtml2Canvas,
-    exportToJpgHtml2Canvas,
-    isExporting,
-  } = useExportImage({
-    cardRef,
+  const { exportToPng, exportToJpg, isExporting } = useExportImage({
     cardProps,
-  });
+  })
+
+  // Generate filename: {title}-{artist}-{format}-{firstLine}-{lastLine}.{ext}
+  const getFilename = (ext: 'png' | 'jpg') => {
+    const title = sanitizeForFilename(trackName ?? 'untitled')
+    const artist = sanitizeForFilename(artistName ?? 'unknown')
+    const linesStr = linesRange ? `${linesRange.first}-${linesRange.last}` : '0-0'
+    return `${title}-${artist}-${format}-${linesStr}.${ext}`
+  }
 
   // Pas prêt pour l'export
-  const canExport = hasTrack && hasSelection && selectedLyricsText.length > 0;
+  const canExport = hasTrack && hasSelection && selectedLyricsText.length > 0
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:col-span-2">
+    <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 lg:col-span-2'>
       {/* Left: Preview */}
-      <div className="flex flex-col items-center justify-start">
-        <div className="sticky top-8">
-          <div className="rounded-xl border bg-card/50 p-4">
+      <div className='flex flex-col items-center justify-start'>
+        <div className='sticky top-8'>
+          <div className='rounded-xl border bg-card/50 p-4'>
             <CardCanvas
-              ref={cardRef}
               lyrics={selectedLyricsText}
-              trackName={trackName ?? ""}
-              artistName={artistName ?? ""}
+              trackName={trackName ?? ''}
+              artistName={artistName ?? ''}
               artworkUrl={artworkUrl ?? undefined}
               dominantColor={dominantColor}
               theme={theme as CardTheme}
               customColor={customColor ?? undefined}
-              fontSize={fontSize as CardFontSize}
+              fontSizePx={fontSizePx}
               format={format as CardFormat}
-              textAlign="left"
-              infoPosition={infoPosition as "top" | "bottom"}
+              infoPosition={infoPosition as 'top' | 'bottom'}
               showArtwork={showArtwork}
               showTitle={showTitle}
               showArtist={showArtist}
@@ -125,12 +133,10 @@ export function CardPreviewSection() {
           </div>
 
           {/* Export buttons under preview */}
-          <div className="mt-4">
+          <div className='mt-4'>
             <ExportButtons
-              onExportPngSatori={() => exportToPngSatori()}
-              onExportJpgSatori={() => exportToJpgSatori()}
-              onExportPngHtml2Canvas={() => exportToPngHtml2Canvas()}
-              onExportJpgHtml2Canvas={() => exportToJpgHtml2Canvas()}
+              onExportPng={() => exportToPng(getFilename('png'))}
+              onExportJpg={() => exportToJpg(getFilename('jpg'))}
               shareUrl={getShareUrl()}
               disabled={!canExport}
               isExporting={isExporting}
@@ -140,12 +146,12 @@ export function CardPreviewSection() {
       </div>
 
       {/* Right: Controls */}
-      <div className="space-y-6">
-        <div className="rounded-xl border bg-card p-5">
-          <h3 className="text-lg font-semibold mb-4">Personnalise ta carte</h3>
+      <div className='space-y-6'>
+        <div className='rounded-xl border bg-card p-5'>
+          <h3 className='text-lg font-semibold mb-4'>Personnalise ta carte</h3>
           <CardControls />
         </div>
       </div>
     </div>
-  );
+  )
 }

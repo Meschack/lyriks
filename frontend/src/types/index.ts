@@ -1,3 +1,3 @@
-export * from "./track";
-export * from "./lyrics";
-export * from "./card";
+export * from './track'
+export * from './lyrics'
+export * from './card'
