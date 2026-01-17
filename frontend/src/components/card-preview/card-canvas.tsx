@@ -134,7 +134,7 @@ export function CardCanvas({
             className='absolute bottom-2 right-2 text-xs'
             style={{ color: 'rgba(255, 255, 255, 0.3)' }}
           >
-            dub.sh/lyriks
+            kloo.me/lyriks
           </div>
         )}
       </div>
