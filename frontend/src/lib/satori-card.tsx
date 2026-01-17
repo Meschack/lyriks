@@ -96,8 +96,8 @@ const TrackInfo = ({
         <img
           src={artworkUrl}
           alt='Album artwork'
-          width={56}
-          height={56}
+          width={300}
+          height={300}
           style={{
             width: '56px',
             height: '56px',
@@ -106,6 +106,7 @@ const TrackInfo = ({
           }}
         />
       )}
+
       <div
         style={{
           display: 'flex',

@@ -80,10 +80,15 @@ export async function healthCheck(): Promise<{
 }
 
 /**
- * Get a proxied image URL to avoid CORS issues
+ * Get a proxied image URL to avoid CORS issues.
+ * Data URLs are returned as-is since they don't need proxying.
  */
 export function getProxiedImageUrl(url: string | null | undefined): string | undefined {
   if (!url) return undefined
+  // Data URLs don't need proxying - return them directly
+  if (url.startsWith('data:')) {
+    return url
+  }
   const params = new URLSearchParams({ url })
   return `${API_URL}/api/image?${params}`
 }

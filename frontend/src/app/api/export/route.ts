@@ -14,8 +14,12 @@ async function loadFonts() {
   try {
     // Load Inter fonts from Google Fonts CDN
     const [regular, bold] = await Promise.all([
-      fetch(`${process.env.NEXT_PUBLIC_APP_URL}/fonts/sf-pro-display/regular.ttf`).then((res) => res.arrayBuffer()),
-      fetch(`${process.env.NEXT_PUBLIC_APP_URL}/fonts/sf-pro-display/bold.ttf`).then((res) => res.arrayBuffer()),
+      fetch(`${process.env.NEXT_PUBLIC_APP_URL}/fonts/sf-pro-display/regular.ttf`).then((res) =>
+        res.arrayBuffer(),
+      ),
+      fetch(`${process.env.NEXT_PUBLIC_APP_URL}/fonts/sf-pro-display/bold.ttf`).then((res) =>
+        res.arrayBuffer(),
+      ),
     ])
 
     fontsCache = [
@@ -139,7 +143,7 @@ export async function POST(request: NextRequest) {
     } else {
       imageBuffer = await sharp(svgBuffer)
         .resize(exportWidth, exportHeight)
-        .png({quality: 100})
+        .png({ quality: 100 })
         .toBuffer()
       contentType = 'image/png'
     }

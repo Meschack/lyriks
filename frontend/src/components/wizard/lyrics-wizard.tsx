@@ -4,17 +4,28 @@ import { useCardParams, type WizardStep } from '@/hooks/use-card-params'
 import { SearchSection } from '@/components/search/search-section'
 import { LyricsSection } from '@/components/lyrics/lyrics-section'
 import { CardPreviewSection } from '@/components/card-preview/card-preview-section'
+import { ModeToggle } from '@/components/custom/mode-toggle'
+import { CustomCardForm } from '@/components/custom/custom-card-form'
 import { cn } from '@/lib/utils'
-import { ChevronLeft, ChevronRight, Search, FileText, Sparkles } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Search, FileText, Sparkles, PenLine } from 'lucide-react'
 
-const STEPS = [
+const SEARCH_STEPS = [
   { id: 1 as WizardStep, label: 'Recherche', icon: Search },
   { id: 2 as WizardStep, label: 'Lyrics', icon: FileText },
   { id: 3 as WizardStep, label: 'Création', icon: Sparkles },
 ] as const
 
+const CUSTOM_STEPS = [
+  { id: 1 as WizardStep, label: 'Personnalisé', icon: PenLine },
+  { id: 2 as WizardStep, label: 'Création', icon: Sparkles },
+] as const
+
 export function LyricsWizard() {
-  const { currentStep, canProceedToCard, goToStep, goToCard } = useCardParams()
+  const { currentStep, canProceedToCard, goToStep, goToCard, isCustomMode, goToSearch } =
+    useCardParams()
+
+  // Select the appropriate steps based on mode
+  const steps = isCustomMode ? CUSTOM_STEPS : SEARCH_STEPS
 
   const canGoBack = currentStep > 1
 
@@ -22,13 +33,16 @@ export function LyricsWizard() {
     <div className='space-y-6'>
       {/* Step indicator */}
       <div className='flex items-center justify-center gap-2'>
-        {STEPS.map((step, index) => {
+        {steps.map((step, index) => {
           const Icon = step.icon
           const isActive = currentStep === step.id
           const isCompleted = currentStep > step.id
-          // Can click back to previous steps, OR click forward to step 3 if allowed
+          // Can click back to previous steps, OR click forward to card step if allowed
           const canClickBack = step.id < currentStep
-          const canClickForward = step.id === 3 && currentStep === 2 && canProceedToCard
+          // In custom mode, step 2 is the card; in search mode, step 3 is the card
+          const cardStepId = isCustomMode ? 2 : 3
+          const canClickForward =
+            step.id === cardStepId && currentStep === (isCustomMode ? 1 : 2) && canProceedToCard
           const isClickable = canClickBack || canClickForward
 
           return (
@@ -48,7 +62,7 @@ export function LyricsWizard() {
                 <Icon className='h-4 w-4' />
                 <span className='text-sm font-medium hidden sm:inline'>{step.label}</span>
               </button>
-              {index < STEPS.length - 1 && (
+              {index < steps.length - 1 && (
                 <div className={cn('w-8 h-0.5 mx-1', isCompleted ? 'bg-primary' : 'bg-muted')} />
               )}
             </div>
@@ -59,7 +73,7 @@ export function LyricsWizard() {
       {/* Back button */}
       {canGoBack && (
         <button
-          onClick={() => goToStep((currentStep - 1) as WizardStep)}
+          onClick={() => goToSearch()}
           className='flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors'
         >
           <ChevronLeft className='h-4 w-4' />
@@ -69,17 +83,38 @@ export function LyricsWizard() {
 
       {/* Step content */}
       <div className='min-h-[500px]'>
+        {/* Step 1: Search or Custom Form */}
         {currentStep === 1 && (
-          <div className='max-w-xl mx-auto space-y-4'>
-            <div className='text-center mb-8'>
-              <h2 className='text-2xl font-bold mb-2'>Trouve ta chanson</h2>
-              <p className='text-muted-foreground'>Recherche par titre ou artiste</p>
-            </div>
-            <SearchSection />
+          <div className='max-w-xl mx-auto space-y-6'>
+            {/* Mode toggle */}
+            <ModeToggle />
+
+            {/* Search mode */}
+            {!isCustomMode && (
+              <>
+                <div className='text-center mb-4'>
+                  <h2 className='text-2xl font-bold mb-2'>Trouve ta chanson</h2>
+                  <p className='text-muted-foreground'>Recherche par titre ou artiste</p>
+                </div>
+                <SearchSection />
+              </>
+            )}
+
+            {/* Custom mode */}
+            {isCustomMode && (
+              <>
+                <div className='text-center mb-4'>
+                  <h2 className='text-2xl font-bold mb-2'>Crée ta carte</h2>
+                  <p className='text-muted-foreground'>Remplis les informations ci-dessous</p>
+                </div>
+                <CustomCardForm />
+              </>
+            )}
           </div>
         )}
 
-        {currentStep === 2 && (
+        {/* Step 2: Lyrics selection (search mode only) OR Card preview (custom mode) */}
+        {currentStep === 2 && !isCustomMode && (
           <div className='max-w-xl mx-auto space-y-4'>
             <div className='text-center mb-8'>
               <h2 className='text-2xl font-bold mb-2'>Sélectionne tes lyrics</h2>
@@ -104,7 +139,8 @@ export function LyricsWizard() {
           </div>
         )}
 
-        {currentStep === 3 && (
+        {/* Card preview (step 2 in custom mode, step 3 in search mode) */}
+        {((currentStep === 2 && isCustomMode) || currentStep === 3) && (
           <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
             <CardPreviewSection />
           </div>

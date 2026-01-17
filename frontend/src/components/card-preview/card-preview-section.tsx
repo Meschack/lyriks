@@ -28,6 +28,8 @@ export function CardPreviewSection() {
     artworkUrl,
     selectedLines,
     linesRange,
+    customLyrics,
+    isCustomMode,
     theme,
     customColor,
     fontSizePx,
@@ -42,19 +44,27 @@ export function CardPreviewSection() {
     getShareUrl,
   } = useCardParams()
 
-  const { data: lyricsData } = useLyrics(trackId, trackName, artistName)
+  // Only fetch lyrics in search mode
+  const { data: lyricsData } = useLyrics(
+    isCustomMode ? null : trackId,
+    isCustomMode ? null : trackName,
+    isCustomMode ? null : artistName,
+  )
 
   // Couleur dominante de la pochette
   const { dominantColor } = useDominantColor(artworkUrl ?? undefined)
 
-  // Extraire les lignes sélectionnées
-  const selectedLyricsText = useMemo(
-    () =>
+  // Extraire les lignes sélectionnées (custom mode uses customLyrics directly)
+  const selectedLyricsText = useMemo(() => {
+    if (isCustomMode) {
+      return customLyrics
+    }
+    return (
       lyricsData?.lyrics?.lines
         .filter((line) => selectedLines.includes(line.index))
-        .map((line) => line.text) ?? [],
-    [lyricsData, selectedLines],
-  )
+        .map((line) => line.text) ?? []
+    )
+  }, [isCustomMode, customLyrics, lyricsData, selectedLines])
 
   // Card props for export API
   const cardProps = useMemo(
@@ -97,11 +107,16 @@ export function CardPreviewSection() {
     cardProps,
   })
 
-  // Generate filename: {title}-{artist}-{format}-{firstLine}-{lastLine}.{ext}
+  // Generate filename: {title}-{artist}-{format}-{lines}.{ext}
   const getFilename = (ext: 'png' | 'jpg') => {
     const title = sanitizeForFilename(trackName ?? 'untitled')
     const artist = sanitizeForFilename(artistName ?? 'unknown')
-    const linesStr = linesRange ? `${linesRange.first}-${linesRange.last}` : '0-0'
+    // In custom mode, use line count; in search mode, use line range
+    const linesStr = isCustomMode
+      ? `${customLyrics.length}lines`
+      : linesRange
+        ? `${linesRange.first}-${linesRange.last}`
+        : '0-0'
     return `${title}-${artist}-${format}-${linesStr}-${Date.now()}.${ext}`
   }
 

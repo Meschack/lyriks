@@ -169,17 +169,14 @@ const TrackInfo = ({
         <img
           src={artworkUrl}
           alt='Album artwork'
-          className='size-12 rounded-sm shadow-lg'
+          className='size-14 rounded-sm shadow-lg object-cover'
           crossOrigin='anonymous'
         />
       )}
       <div style={{ color: '#ffffff' }}>
-        {showTitle && <p className='font-semibold truncate'>{trackName}</p>}
+        {showTitle && <p className='font-semibold truncate text-lg'>{trackName}</p>}
         {showArtist && (
-          <p
-            className='text-sm truncate font-semibold'
-            style={{ color: 'rgba(255, 255, 255, 0.7)' }}
-          >
+          <p className='truncate font-semibold' style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
             {artistName}
           </p>
         )}

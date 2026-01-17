@@ -46,6 +46,15 @@ export const CARD_THEMES = {
 export const MAX_SELECTED_LINES = 8
 export const MIN_SELECTED_LINES = 1
 
+// Custom card mode limits
+export const MAX_CUSTOM_LINES = 8
+export const MIN_CUSTOM_LINES = 1
+export const MAX_TITLE_LENGTH = 100
+export const MAX_ARTIST_LENGTH = 100
+export const MAX_LINE_LENGTH = 200
+export const MAX_IMAGE_UPLOAD_SIZE = 5 * 1024 * 1024 // 5MB
+export const COMPRESSED_IMAGE_MAX_WIDTH = 600
+
 export const SEARCH_DEBOUNCE_MS = 300
 
 export const SEARCH_CACHE_TTL = 3600
