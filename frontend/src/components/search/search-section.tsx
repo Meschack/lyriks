@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import posthog from 'posthog-js'
 import { Search, X, Loader2 } from 'lucide-react'
 import { useSearch } from '@/hooks/use-search'
 import { useCardParams } from '@/hooks/use-card-params'
@@ -19,14 +20,21 @@ export function SearchSection() {
     e.preventDefault()
     if (query.trim()) {
       setSubmittedQuery(query.trim())
+      posthog.capture('song_searched', { query: query.trim() })
     }
   }
 
   const handleSelectTrack = (track: Track) => {
+    const artist = getPrimaryArtist(track)
+    posthog.capture('track_selected', {
+      track_id: track.id,
+      track_name: track.name,
+      artist_name: artist,
+    })
     selectTrack({
       id: track.id,
       name: track.name,
-      artist: getPrimaryArtist(track),
+      artist,
       artworkUrl: getArtworkUrl(track, 'large') || null,
     })
     setQuery('')

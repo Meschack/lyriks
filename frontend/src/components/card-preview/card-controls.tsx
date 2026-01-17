@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import posthog from 'posthog-js'
 import { useCardParams } from '@/hooks/use-card-params'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
@@ -67,6 +68,21 @@ export function CardControls() {
     ([, value]) => value === fontSizePx,
   )?.[0] as keyof typeof FONT_SIZE_PRESETS | undefined
 
+  // Tracked handlers
+  const handleThemeChange = (newTheme: CardTheme) => {
+    if (newTheme !== theme) {
+      posthog.capture('theme_changed', { theme: newTheme })
+    }
+    setTheme(newTheme)
+  }
+
+  const handleFormatChange = (newFormat: CardFormat) => {
+    if (newFormat !== format) {
+      posthog.capture('format_changed', { format: newFormat })
+    }
+    setFormat(newFormat)
+  }
+
   return (
     <div className='space-y-6'>
       {/* Theme Swatches */}
@@ -81,7 +97,7 @@ export function CardControls() {
             return (
               <button
                 key={key}
-                onClick={() => setTheme(key as CardTheme)}
+                onClick={() => handleThemeChange(key as CardTheme)}
                 className={cn(
                   'group relative aspect-square rounded-lg transition-all overflow-hidden',
                   'ring-2 ring-offset-2 ring-offset-background',
@@ -136,7 +152,7 @@ export function CardControls() {
             return (
               <button
                 key={key}
-                onClick={() => setFormat(key as CardFormat)}
+                onClick={() => handleFormatChange(key as CardFormat)}
                 className={cn(
                   'flex-1 flex flex-col items-center gap-1.5 p-3 rounded-lg transition-all',
                   'border-2',

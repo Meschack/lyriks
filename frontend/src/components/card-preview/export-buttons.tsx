@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import posthog from 'posthog-js'
 import { Download, Link, Loader2, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -23,9 +24,20 @@ export function ExportButtons({
 }: ExportButtonsProps) {
   const [copied, setCopied] = useState(false)
 
+  const handleExportPng = async () => {
+    posthog.capture('card_exported', { format: 'png' })
+    await onExportPng()
+  }
+
+  const handleExportJpg = async () => {
+    posthog.capture('card_exported', { format: 'jpg' })
+    await onExportJpg()
+  }
+
   const handleCopyLink = async () => {
     try {
       await navigator.clipboard.writeText(shareUrl)
+      posthog.capture('share_link_copied')
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch (err) {
@@ -38,7 +50,7 @@ export function ExportButtons({
       {/* Export buttons */}
       <div className='grid grid-cols-2 gap-2'>
         <Button
-          onClick={onExportPng}
+          onClick={handleExportPng}
           disabled={disabled || isExportingPng || isExportingJpg}
           size='sm'
           className='w-full'
@@ -51,7 +63,7 @@ export function ExportButtons({
           PNG
         </Button>
         <Button
-          onClick={onExportJpg}
+          onClick={handleExportJpg}
           disabled={disabled || isExportingPng || isExportingJpg}
           variant='secondary'
           size='sm'

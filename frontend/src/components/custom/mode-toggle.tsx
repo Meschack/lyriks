@@ -1,5 +1,6 @@
 'use client'
 
+import posthog from 'posthog-js'
 import { Search, PenLine } from 'lucide-react'
 import { useCardParams, type CardMode } from '@/hooks/use-card-params'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -9,6 +10,10 @@ export function ModeToggle() {
 
   const handleModeChange = (newMode: string) => {
     if (newMode !== mode) {
+      posthog.capture('mode_switched', {
+        from_mode: mode,
+        to_mode: newMode,
+      })
       // Reset state when switching modes
       resetAll()
       setMode(newMode as CardMode)

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import posthog from 'posthog-js'
 import { Image as ImageIcon, Upload, X, ChevronRight, Plus, Trash2 } from 'lucide-react'
 import { useCardParams } from '@/hooks/use-card-params'
 import { Input } from '@/components/ui/input'
@@ -39,6 +40,12 @@ export function CustomCardForm() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!canSubmit) return
+
+    posthog.capture('custom_card_created', {
+      has_artwork: Boolean(artworkPreview || artworkUrl.trim()),
+      artwork_type: artworkPreview?.startsWith('data:') ? 'upload' : artworkUrl.trim() ? 'url' : 'none',
+      lines_count: nonEmptyLines.length,
+    })
 
     setCustomCard({
       title: title.trim(),
