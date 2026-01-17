@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import satori from 'satori'
+import satori, { SatoriOptions } from 'satori'
 import sharp from 'sharp'
 import { SatoriCard, type SatoriCardProps } from '@/lib/satori-card'
-import { CARD_FORMATS } from '@/lib/constants'
+import { CARD_FORMATS, EXPORT_SCALE_FACTOR } from '@/lib/constants'
 import type { CardFormat } from '@/types/card'
 
 // Cache fonts in memory
-let fontsCache: { data: ArrayBuffer; name: string; weight: number; style: string }[] | null = null
+let fontsCache: SatoriOptions['fonts'] | null = null
 
 async function loadFonts() {
   if (fontsCache) return fontsCache
@@ -14,18 +14,14 @@ async function loadFonts() {
   try {
     // Load Inter fonts from Google Fonts CDN
     const [regular, bold] = await Promise.all([
-      fetch(
-        'https://fonts.gstatic.com/s/inter/v18/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfMZhrib2Bg-4.ttf',
-      ).then((res) => res.arrayBuffer()),
-      fetch(
-        'https://fonts.gstatic.com/s/inter/v18/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuFuYMZhrib2Bg-4.ttf',
-      ).then((res) => res.arrayBuffer()),
+      fetch(`${process.env.NEXT_PUBLIC_APP_URL}/fonts/sf-pro-display/regular.ttf`).then((res) => res.arrayBuffer()),
+      fetch(`${process.env.NEXT_PUBLIC_APP_URL}/fonts/sf-pro-display/bold.ttf`).then((res) => res.arrayBuffer()),
     ])
 
     fontsCache = [
-      { data: regular, name: 'Inter', weight: 400, style: 'normal' },
-      { data: bold, name: 'Inter', weight: 700, style: 'normal' },
-    ]
+      { data: regular, name: 'SF Pro Display', weight: 400, style: 'normal' },
+      { data: bold, name: 'SF Pro Display', weight: 700, style: 'normal' },
+    ] satisfies SatoriOptions['fonts']
 
     return fontsCache
   } catch (error) {
@@ -77,7 +73,7 @@ export async function POST(request: NextRequest) {
       showTitle = true,
       showArtist = true,
       showWatermark = true,
-      infoPosition = 'bottom',
+      infoPosition = 'top',
       outputFormat = 'png',
     } = body
 
@@ -86,7 +82,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid format' }, { status: 400 })
     }
 
-    const dimensions = CARD_FORMATS[format as CardFormat]
+    const baseDimensions = CARD_FORMATS[format as CardFormat]
+    const logicalWidth = baseDimensions.width
+    const logicalHeight = baseDimensions.height
+    const exportWidth = Math.round(logicalWidth * EXPORT_SCALE_FACTOR)
+    const exportHeight = Math.round(logicalHeight * EXPORT_SCALE_FACTOR)
 
     // Load fonts
     const fonts = await loadFonts()
@@ -117,27 +117,30 @@ export async function POST(request: NextRequest) {
       infoPosition,
     }
 
-    // Generate SVG with Satori
+    // Generate SVG with Satori using logical (base) dimensions
     const svg = await satori(SatoriCard(cardProps), {
-      width: dimensions.width,
-      height: dimensions.height,
-      fonts: fonts as {
-        data: ArrayBuffer
-        name: string
-        weight: 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900
-        style: 'normal' | 'italic'
-      }[],
+      width: logicalWidth,
+      height: logicalHeight,
+      fonts,
     })
 
-    // Convert SVG to image with Sharp
+    // Convert SVG to high-resolution image with Sharp
     let imageBuffer: Buffer
     let contentType: string
 
+    const svgBuffer = Buffer.from(svg)
+
     if (outputFormat === 'jpg' || outputFormat === 'jpeg') {
-      imageBuffer = await sharp(Buffer.from(svg)).jpeg({ quality: 100 }).toBuffer()
+      imageBuffer = await sharp(svgBuffer)
+        .resize(exportWidth, exportHeight)
+        .jpeg({ quality: 100 })
+        .toBuffer()
       contentType = 'image/jpeg'
     } else {
-      imageBuffer = await sharp(Buffer.from(svg)).png().toBuffer()
+      imageBuffer = await sharp(svgBuffer)
+        .resize(exportWidth, exportHeight)
+        .png({quality: 100})
+        .toBuffer()
       contentType = 'image/png'
     }
 

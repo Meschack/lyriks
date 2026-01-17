@@ -55,5 +55,5 @@ export const defaultCardSettings: CardSettings = {
   showTitle: true,
   showArtist: true,
   showWatermark: true,
-  infoPosition: 'bottom',
+  infoPosition: 'top',
 }

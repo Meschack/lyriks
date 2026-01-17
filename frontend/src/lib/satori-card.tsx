@@ -96,11 +96,11 @@ const TrackInfo = ({
         <img
           src={artworkUrl}
           alt='Album artwork'
-          width={48}
-          height={48}
+          width={56}
+          height={56}
           style={{
-            width: '48px',
-            height: '48px',
+            width: '56px',
+            height: '56px',
             borderRadius: '6px',
             objectFit: 'cover',
           }}
@@ -116,7 +116,7 @@ const TrackInfo = ({
         {showTitle && (
           <span
             style={{
-              fontSize: '14px',
+              fontSize: '18px',
               fontWeight: 600,
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -130,7 +130,7 @@ const TrackInfo = ({
         {showArtist && (
           <span
             style={{
-              fontSize: '12px',
+              fontSize: '16px',
               fontWeight: 600,
               color: 'rgba(255, 255, 255, 0.7)',
               overflow: 'hidden',
@@ -185,7 +185,7 @@ export const SatoriCard = ({
         height: `${dimensions.height}px`,
         position: 'relative',
         background,
-        fontFamily: 'Inter, sans-serif',
+        fontFamily: 'SF Pro Display, sans-serif',
       }}
     >
       {/* Background image for blur-artwork theme */}
@@ -197,8 +197,8 @@ export const SatoriCard = ({
             position: 'absolute',
             top: '-25px',
             left: '-25px',
-            width: `${dimensions.width + 50}px`,
-            height: `${dimensions.height + 50}px`,
+            width: `${dimensions.width + 25}px`,
+            height: `${dimensions.height + 25}px`,
             objectFit: 'cover',
             filter: 'blur(30px)',
           }}
@@ -306,7 +306,7 @@ export const SatoriCard = ({
               color: 'rgba(255, 255, 255, 0.3)',
             }}
           >
-            lyriks.app
+            kloo.me/lyriks
           </span>
         )}
       </div>

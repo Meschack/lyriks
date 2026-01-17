@@ -18,7 +18,6 @@ import {
   Sparkles,
   ArrowUp,
   ArrowDown,
-  Crown,
 } from 'lucide-react'
 import type { CardTheme, CardFormat } from '@/types/card'
 import { cn } from '@/lib/utils'
@@ -275,7 +274,7 @@ export function CardControls() {
             </label>
           ))}
 
-          {/* Watermark - PRO feature */}
+          {/* Watermark */}
           <label
             className={cn(
               'flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all',
@@ -284,7 +283,6 @@ export function CardControls() {
           >
             <Sparkles className='h-4 w-4 text-primary' />
             <span className='text-sm font-medium flex-1 text-foreground'>Watermark</span>
-            <Crown className='h-4 w-4 text-amber-500' />
             <Switch
               id='watermark'
               checked={showWatermark}

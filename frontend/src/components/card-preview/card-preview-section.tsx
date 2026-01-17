@@ -93,7 +93,7 @@ export function CardPreviewSection() {
     ],
   )
 
-  const { exportToPng, exportToJpg, isExporting } = useExportImage({
+  const { exportToPng, exportToJpg, isExportingPng, isExportingJpg } = useExportImage({
     cardProps,
   })
 
@@ -102,7 +102,7 @@ export function CardPreviewSection() {
     const title = sanitizeForFilename(trackName ?? 'untitled')
     const artist = sanitizeForFilename(artistName ?? 'unknown')
     const linesStr = linesRange ? `${linesRange.first}-${linesRange.last}` : '0-0'
-    return `${title}-${artist}-${format}-${linesStr}.${ext}`
+    return `${title}-${artist}-${format}-${linesStr}-${Date.now()}.${ext}`
   }
 
   // Pas prêt pour l'export
@@ -139,7 +139,8 @@ export function CardPreviewSection() {
               onExportJpg={() => exportToJpg(getFilename('jpg'))}
               shareUrl={getShareUrl()}
               disabled={!canExport}
-              isExporting={isExporting}
+              isExportingPng={isExportingPng}
+              isExportingJpg={isExportingJpg}
             />
           </div>
         </div>

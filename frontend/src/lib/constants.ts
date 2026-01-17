@@ -4,11 +4,17 @@ export const CARD_FONT_SIZES = {
   large: 'text-4xl leading-tight',
 } as const
 
+// Logical layout dimensions in pixels. The exported images are scaled up
+// by EXPORT_SCALE_FACTOR so that all elements (text, artwork, watermark, etc.)
+// keep the same proportions as in the in-app preview.
 export const CARD_FORMATS = {
   square: { width: 400, height: 400, label: 'Square (1:1)' },
   portrait: { width: 400, height: 500, label: 'Portrait (4:5)' },
   story: { width: 270, height: 480, label: 'Story (9:16)' },
 } as const
+
+// Factor used when rasterizing SVGs for export (e.g. 400x400 → 1600x1600)
+export const EXPORT_SCALE_FACTOR = 6
 
 export const CARD_THEMES = {
   'gradient-spotify': {

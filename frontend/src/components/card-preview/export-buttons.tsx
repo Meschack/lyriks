@@ -9,7 +9,8 @@ interface ExportButtonsProps {
   onExportJpg: () => Promise<void>
   shareUrl: string
   disabled: boolean
-  isExporting: boolean
+  isExportingPng: boolean
+  isExportingJpg: boolean
 }
 
 export function ExportButtons({
@@ -17,7 +18,8 @@ export function ExportButtons({
   onExportJpg,
   shareUrl,
   disabled,
-  isExporting,
+  isExportingPng,
+  isExportingJpg,
 }: ExportButtonsProps) {
   const [copied, setCopied] = useState(false)
 
@@ -37,11 +39,11 @@ export function ExportButtons({
       <div className='grid grid-cols-2 gap-2'>
         <Button
           onClick={onExportPng}
-          disabled={disabled || isExporting}
+          disabled={disabled || isExportingPng || isExportingJpg}
           size='sm'
           className='w-full'
         >
-          {isExporting ? (
+          {isExportingPng ? (
             <Loader2 className='h-4 w-4 mr-2 animate-spin' />
           ) : (
             <Download className='h-4 w-4 mr-2' />
@@ -50,12 +52,12 @@ export function ExportButtons({
         </Button>
         <Button
           onClick={onExportJpg}
-          disabled={disabled || isExporting}
+          disabled={disabled || isExportingPng || isExportingJpg}
           variant='secondary'
           size='sm'
           className='w-full'
         >
-          {isExporting ? (
+          {isExportingJpg ? (
             <Loader2 className='h-4 w-4 mr-2 animate-spin' />
           ) : (
             <Download className='h-4 w-4 mr-2' />

@@ -60,7 +60,7 @@ export function useCardParams() {
   const [textAlign, setTextAlign] = useQueryState('align', parseAsString.withDefault('left'))
   const [infoPosition, setInfoPosition] = useQueryState(
     'infoPos',
-    parseAsString.withDefault('bottom'),
+    parseAsString.withDefault('top'),
   )
 
   // Display toggles
@@ -182,7 +182,7 @@ export function useCardParams() {
     setFontSizePx(24)
     setFormat('square')
     setTextAlign('left')
-    setInfoPosition('bottom')
+    setInfoPosition('top')
     setShowArtwork(true)
     setShowTitle(true)
     setShowArtist(true)

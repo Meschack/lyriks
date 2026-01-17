@@ -37,7 +37,7 @@ export function CardCanvas({
   showTitle,
   showArtist,
   showWatermark,
-  infoPosition = 'bottom',
+  infoPosition = 'top',
 }: CardCanvasProps) {
   const dimensions = CARD_FORMATS[format]
   const aspectRatio = dimensions.width / dimensions.height

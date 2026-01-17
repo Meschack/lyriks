@@ -10,12 +10,14 @@ interface UseExportImageOptions {
 }
 
 export function useExportImage({ cardProps }: UseExportImageOptions) {
-  const [isExporting, setIsExporting] = useState(false)
+  const [isExportingPng, setIsExportingPng] = useState(false)
+  const [isExportingJpg, setIsExportingJpg] = useState(false)
+  const [isCopying, setIsCopying] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const exportImage = useCallback(
-    async (format: ExportFormat, filename?: string) => {
-      setIsExporting(true)
+  const exportToPng = useCallback(
+    async (filename?: string) => {
+      setIsExportingPng(true)
       setError(null)
 
       try {
@@ -26,7 +28,7 @@ export function useExportImage({ cardProps }: UseExportImageOptions) {
           },
           body: JSON.stringify({
             ...cardProps,
-            outputFormat: format,
+            outputFormat: 'png',
           }),
         })
 
@@ -38,7 +40,7 @@ export function useExportImage({ cardProps }: UseExportImageOptions) {
         const blob = await response.blob()
         const url = URL.createObjectURL(blob)
 
-        const defaultFilename = `lyric-card.${format}`
+        const defaultFilename = `lyric-card.png`
         downloadUrl(url, filename || defaultFilename)
 
         URL.revokeObjectURL(url)
@@ -47,28 +49,54 @@ export function useExportImage({ cardProps }: UseExportImageOptions) {
         setError(message)
         console.error(err)
       } finally {
-        setIsExporting(false)
+        setIsExportingPng(false)
       }
     },
     [cardProps],
   )
 
-  const exportToPng = useCallback(
-    async (filename?: string) => {
-      await exportImage('png', filename)
-    },
-    [exportImage],
-  )
-
   const exportToJpg = useCallback(
     async (filename?: string) => {
-      await exportImage('jpg', filename)
+      setIsExportingJpg(true)
+      setError(null)
+
+      try {
+        const response = await fetch('/api/export', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            ...cardProps,
+            outputFormat: 'jpg',
+          }),
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}))
+          throw new Error(errorData.error || 'Export failed')
+        }
+
+        const blob = await response.blob()
+        const url = URL.createObjectURL(blob)
+
+        const defaultFilename = `lyric-card.jpg`
+        downloadUrl(url, filename || defaultFilename)
+
+        URL.revokeObjectURL(url)
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Erreur lors de l'export"
+        setError(message)
+        console.error(err)
+      } finally {
+        setIsExportingJpg(false)
+      }
     },
-    [exportImage],
+    [cardProps],
   )
 
   const copyToClipboard = useCallback(async () => {
-    setIsExporting(true)
+    setIsCopying(true)
     setError(null)
 
     try {
@@ -96,7 +124,7 @@ export function useExportImage({ cardProps }: UseExportImageOptions) {
       setError(message)
       console.error(err)
     } finally {
-      setIsExporting(false)
+      setIsCopying(false)
     }
   }, [cardProps])
 
@@ -104,7 +132,9 @@ export function useExportImage({ cardProps }: UseExportImageOptions) {
     exportToPng,
     exportToJpg,
     copyToClipboard,
-    isExporting,
+    isExportingPng,
+    isExportingJpg,
+    isCopying,
     error,
   }
 }
