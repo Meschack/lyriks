@@ -87,7 +87,7 @@ export function CardControls() {
     <div className='space-y-6'>
       {/* Theme Swatches */}
       <div className='space-y-3'>
-        <Label className='text-sm font-medium'>Ambiance</Label>
+        <Label className='text-sm font-medium'>Theme</Label>
         <div className='grid grid-cols-5 gap-2'>
           {Object.entries(CARD_THEMES).map(([key, { name, preview }]) => {
             const isSelected = theme === key
@@ -173,7 +173,7 @@ export function CardControls() {
       {/* Font Size */}
       <div className='space-y-3'>
         <div className='flex items-center justify-between'>
-          <Label className='text-sm font-medium'>Taille du texte</Label>
+          <Label className='text-sm font-medium'>Text size</Label>
           <span className='text-xs text-muted-foreground font-mono'>{fontSizePx}px</span>
         </div>
 
@@ -214,11 +214,11 @@ export function CardControls() {
 
       {/* Info Position */}
       <div className='space-y-3'>
-        <Label className='text-sm font-medium'>Position des infos</Label>
+        <Label className='text-sm font-medium'>Info position</Label>
         <div className='flex gap-2'>
           {[
-            { value: 'top', icon: ArrowUp, label: 'Haut' },
-            { value: 'bottom', icon: ArrowDown, label: 'Bas' },
+            { value: 'top', icon: ArrowUp, label: 'Top' },
+            { value: 'bottom', icon: ArrowDown, label: 'Bottom' },
           ].map(({ value, icon: Icon, label }) => {
             const isSelected = infoPosition === value
 
@@ -244,27 +244,27 @@ export function CardControls() {
 
       {/* Display Options */}
       <div className='space-y-3'>
-        <Label className='text-sm font-medium'>Affichage</Label>
+        <Label className='text-sm font-medium'>Display</Label>
         <div className='grid grid-cols-2 gap-3'>
           {[
             {
               id: 'artwork',
               icon: Image,
-              label: 'Pochette',
+              label: 'Artwork',
               checked: showArtwork,
               onChange: setShowArtwork,
             },
             {
               id: 'title',
               icon: Type,
-              label: 'Titre',
+              label: 'Title',
               checked: showTitle,
               onChange: setShowTitle,
             },
             {
               id: 'artist',
               icon: User,
-              label: 'Artiste',
+              label: 'Artist',
               checked: showArtist,
               onChange: setShowArtist,
             },

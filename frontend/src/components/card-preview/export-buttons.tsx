@@ -89,12 +89,12 @@ export function ExportButtons({
         {copied ? (
           <>
             <Check className='h-4 w-4 mr-2' />
-            Lien copié!
+            Link copied!
           </>
         ) : (
           <>
             <Link className='h-4 w-4 mr-2' />
-            Copier le lien
+            Copy link
           </>
         )}
       </Button>

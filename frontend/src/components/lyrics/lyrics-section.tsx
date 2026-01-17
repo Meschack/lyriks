@@ -12,19 +12,19 @@ export function LyricsSection() {
   const { trackId, trackName, artistName, selectedLines, setSelectedLines } = useCardParams()
   const { data, isLoading, error } = useLyrics(trackId, trackName, artistName)
 
-  // Pas de track sélectionné
+  // No track selected
   if (!trackId) {
     return (
       <Card className='border-dashed'>
         <CardContent className='py-12 text-center text-muted-foreground'>
           <Music className='h-12 w-12 mx-auto mb-4 opacity-50' />
-          <p>Recherche et sélectionne une chanson pour voir les lyrics</p>
+          <p>Search and select a song to see the lyrics</p>
         </CardContent>
       </Card>
     )
   }
 
-  // Chargement
+  // Loading
   if (isLoading) {
     return (
       <Card>
@@ -40,15 +40,15 @@ export function LyricsSection() {
     )
   }
 
-  // Erreur ou pas de lyrics
+  // Error or no lyrics
   if (error || !data?.lyrics) {
     return (
       <Card className='border-destructive/50'>
         <CardContent className='py-8 text-center'>
           <AlertCircle className='h-8 w-8 mx-auto mb-4 text-destructive' />
-          <p className='font-medium'>Lyrics introuvables</p>
+          <p className='font-medium'>Lyrics not found</p>
           <p className='text-sm text-muted-foreground mt-1'>
-            {data?.error || 'Essaie avec une autre chanson'}
+            {data?.error || 'Try with another song'}
           </p>
         </CardContent>
       </Card>
@@ -57,26 +57,25 @@ export function LyricsSection() {
 
   const { lyrics } = data
 
-  // Aucun contenu de lyrics disponible
+  // No lyrics content available
   if (!lyrics.lines || lyrics.lines.length === 0) {
     return (
       <Card className='border-destructive/50'>
         <CardContent className='py-8 text-center'>
           <AlertCircle className='h-8 w-8 mx-auto mb-4 text-destructive' />
-          <p className='font-medium'>Aucune ligne de lyrics disponible</p>
+          <p className='font-medium'>No lyrics available</p>
           <p className='text-sm text-muted-foreground mt-1'>
-            Il se peut que cette chanson soit instrumentale ou que les paroles ne soient pas
-            disponibles.
+            This song may be instrumental or the lyrics may not be available.
           </p>
         </CardContent>
       </Card>
     )
   }
 
-  // Gestion de la sélection (sélection contiguë améliorée)
+  // Selection handling (improved contiguous selection)
   const handleLineClick = (index: number) => {
     if (selectedLines.length === 0) {
-      // Première sélection
+      // First selection
       setSelectedLines([index])
       return
     }
@@ -84,7 +83,7 @@ export function LyricsSection() {
     const min = Math.min(...selectedLines)
     const max = Math.max(...selectedLines)
 
-    // Clic à l'intérieur de la plage actuelle → nouvelle sélection à partir de cette ligne
+    // Click inside current range → new selection starting from this line
     if (index >= min && index <= max) {
       setSelectedLines([index])
       return
@@ -94,26 +93,26 @@ export function LyricsSection() {
     let newMax: number
 
     if (selectedLines.length === 1) {
-      // Deuxième clic : sélectionner la plage entre la première ligne et celle-ci
+      // Second click: select range between first line and this one
       newMin = Math.min(selectedLines[0], index)
       newMax = Math.max(selectedLines[0], index)
     } else if (index === min - 1) {
-      // Étendre la sélection vers le haut
+      // Extend selection upward
       newMin = index
       newMax = max
     } else if (index === max + 1) {
-      // Étendre la sélection vers le bas
+      // Extend selection downward
       newMin = min
       newMax = index
     } else {
-      // Clic non contigu → nouvelle sélection
+      // Non-contiguous click → new selection
       setSelectedLines([index])
       return
     }
 
     const length = newMax - newMin + 1
     if (length > MAX_SELECTED_LINES) {
-      // Ne pas dépasser la limite, on garde la sélection actuelle
+      // Don't exceed limit, keep current selection
       return
     }
 
@@ -136,16 +135,15 @@ export function LyricsSection() {
           <span>Lyrics</span>
           {selectedLines.length > 0 && (
             <span className='text-sm font-normal text-muted-foreground'>
-              {selectedLines.length} ligne{selectedLines.length > 1 ? 's' : ''} sélectionnée
-              {selectedLines.length > 1 ? 's' : ''}
+              {selectedLines.length} line{selectedLines.length > 1 ? 's' : ''} selected
             </span>
           )}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <p className='text-xs text-muted-foreground mb-4'>
-          Clique sur une ligne pour commencer la sélection, puis sur une autre pour terminer (max{' '}
-          {MAX_SELECTED_LINES} lignes)
+          Click on a line to start selection, then on another to finish (max {MAX_SELECTED_LINES}{' '}
+          lines)
         </p>
 
         <div className='space-y-1 max-h-[400px] overflow-y-auto'>

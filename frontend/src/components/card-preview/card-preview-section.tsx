@@ -51,10 +51,10 @@ export function CardPreviewSection() {
     isCustomMode ? null : artistName,
   )
 
-  // Couleur dominante de la pochette
+  // Dominant color from artwork
   const { dominantColor } = useDominantColor(artworkUrl ?? undefined)
 
-  // Extraire les lignes sélectionnées (custom mode uses customLyrics directly)
+  // Extract selected lines (custom mode uses customLyrics directly)
   const selectedLyricsText = useMemo(() => {
     if (isCustomMode) {
       return customLyrics
@@ -120,7 +120,7 @@ export function CardPreviewSection() {
     return `${title}-${artist}-${format}-${linesStr}-${Date.now()}.${ext}`
   }
 
-  // Pas prêt pour l'export
+  // Not ready for export
   const canExport = hasTrack && hasSelection && selectedLyricsText.length > 0
 
   return (
@@ -164,7 +164,7 @@ export function CardPreviewSection() {
       {/* Right: Controls */}
       <div className='space-y-6'>
         <div className='rounded-xl border bg-card p-5'>
-          <h3 className='text-lg font-semibold mb-4'>Personnalise ta carte</h3>
+          <h3 className='text-lg font-semibold mb-4'>Customize your card</h3>
           <CardControls />
         </div>
       </div>

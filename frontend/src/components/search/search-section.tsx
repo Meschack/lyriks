@@ -53,7 +53,7 @@ export function SearchSection() {
         <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
         <Input
           type='text'
-          placeholder='Recherche une chanson ou un artiste...'
+          placeholder='Search for a song or artist...'
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className='pl-10 pr-10'

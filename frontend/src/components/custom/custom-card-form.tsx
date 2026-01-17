@@ -43,7 +43,11 @@ export function CustomCardForm() {
 
     posthog.capture('custom_card_created', {
       has_artwork: Boolean(artworkPreview || artworkUrl.trim()),
-      artwork_type: artworkPreview?.startsWith('data:') ? 'upload' : artworkUrl.trim() ? 'url' : 'none',
+      artwork_type: artworkPreview?.startsWith('data:')
+        ? 'upload'
+        : artworkUrl.trim()
+          ? 'url'
+          : 'none',
       lines_count: nonEmptyLines.length,
     })
 
@@ -91,14 +95,14 @@ export function CustomCardForm() {
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      setImageError('Le fichier doit être une image')
+      setImageError('File must be an image')
       return
     }
 
     // Validate file size
     if (file.size > MAX_IMAGE_UPLOAD_SIZE) {
       const maxSizeMB = MAX_IMAGE_UPLOAD_SIZE / (1024 * 1024)
-      setImageError(`L'image ne doit pas dépasser ${maxSizeMB}MB`)
+      setImageError(`Image must not exceed ${maxSizeMB}MB`)
       return
     }
 
@@ -113,7 +117,7 @@ export function CustomCardForm() {
       }
     }
     reader.onerror = () => {
-      setImageError("Erreur lors du chargement de l'image")
+      setImageError('Error loading the image')
     }
     reader.readAsDataURL(file)
   }
@@ -131,11 +135,11 @@ export function CustomCardForm() {
     <form onSubmit={handleSubmit} className='space-y-6'>
       {/* Title */}
       <div className='space-y-2'>
-        <Label htmlFor='title'>Titre</Label>
+        <Label htmlFor='title'>Title</Label>
         <Input
           id='title'
           type='text'
-          placeholder='Titre de la chanson ou du livre...'
+          placeholder='Song or book title...'
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           maxLength={MAX_TITLE_LENGTH}
@@ -147,11 +151,11 @@ export function CustomCardForm() {
 
       {/* Artist */}
       <div className='space-y-2'>
-        <Label htmlFor='artist'>Artiste / Auteur</Label>
+        <Label htmlFor='artist'>Artist / Author</Label>
         <Input
           id='artist'
           type='text'
-          placeholder="Nom de l'artiste ou de l'auteur..."
+          placeholder='Artist or author name...'
           value={artist}
           onChange={(e) => setArtist(e.target.value)}
           maxLength={MAX_ARTIST_LENGTH}
@@ -163,17 +167,17 @@ export function CustomCardForm() {
 
       {/* Artwork */}
       <div className='space-y-2'>
-        <Label>Illustration (optionnel)</Label>
+        <Label>Artwork (optional)</Label>
 
         {/* Preview */}
         {artworkPreview && (
           <div className='relative w-24 h-24 rounded-lg overflow-hidden border'>
             <img
               src={artworkPreview}
-              alt='Aperçu'
+              alt='Preview'
               className='w-full h-full object-cover'
               onError={() => {
-                setImageError("Impossible de charger l'image")
+                setImageError('Unable to load image')
                 setArtworkPreview(null)
               }}
             />
@@ -194,7 +198,7 @@ export function CustomCardForm() {
               <ImageIcon className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
               <Input
                 type='url'
-                placeholder="URL de l'image..."
+                placeholder='Image URL...'
                 value={artworkUrl}
                 onChange={(e) => handleArtworkUrlChange(e.target.value)}
                 className='pl-10'
@@ -203,7 +207,7 @@ export function CustomCardForm() {
 
             <div className='flex items-center gap-3'>
               <div className='h-px flex-1 bg-border' />
-              <span className='text-xs text-muted-foreground'>ou</span>
+              <span className='text-xs text-muted-foreground'>or</span>
               <div className='h-px flex-1 bg-border' />
             </div>
 
@@ -222,7 +226,7 @@ export function CustomCardForm() {
               onClick={() => fileInputRef.current?.click()}
             >
               <Upload className='h-4 w-4' />
-              Importer une image
+              Upload an image
             </Button>
           </div>
         )}
@@ -233,14 +237,14 @@ export function CustomCardForm() {
       {/* Lyrics - Line by line inputs */}
       <div className='space-y-3'>
         <div className='flex items-center justify-between'>
-          <Label>Texte / Paroles</Label>
+          <Label>Text / Lyrics</Label>
           <span
             className={cn(
               'text-xs',
               lines.length >= MAX_CUSTOM_LINES ? 'text-destructive' : 'text-muted-foreground',
             )}
           >
-            {lineCount}/{MAX_CUSTOM_LINES} lignes
+            {lineCount}/{MAX_CUSTOM_LINES} lines
           </span>
         </div>
 
@@ -250,7 +254,7 @@ export function CustomCardForm() {
               <span className='text-xs text-muted-foreground w-4 text-right'>{index + 1}</span>
               <Input
                 type='text'
-                placeholder={`Ligne ${index + 1}...`}
+                placeholder={`Line ${index + 1}...`}
                 value={line}
                 onChange={(e) => updateLine(index, e.target.value)}
                 className='flex-1'
@@ -273,14 +277,14 @@ export function CustomCardForm() {
         {lines.length < MAX_CUSTOM_LINES && (
           <Button type='button' variant='outline' size='sm' onClick={addLine} className='w-full'>
             <Plus className='h-4 w-4' />
-            Ajouter une ligne
+            Add a line
           </Button>
         )}
       </div>
 
       {/* Submit */}
       <Button type='submit' disabled={!canSubmit} className='w-full'>
-        Créer ma carte
+        Create my card
         <ChevronRight className='h-4 w-4' />
       </Button>
     </form>

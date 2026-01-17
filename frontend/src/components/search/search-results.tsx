@@ -31,7 +31,7 @@ export function SearchResults({ results, isLoading, error, onSelect }: SearchRes
   if (error) {
     return (
       <div className='p-4 bg-destructive/10 text-destructive rounded-lg'>
-        Erreur lors de la recherche: {error.message}
+        Error during search: {error.message}
       </div>
     )
   }
@@ -39,7 +39,7 @@ export function SearchResults({ results, isLoading, error, onSelect }: SearchRes
   if (results.length === 0) {
     return (
       <div className='p-4 text-center text-muted-foreground bg-card rounded-lg border'>
-        Aucun résultat trouvé
+        No results found
       </div>
     )
   }

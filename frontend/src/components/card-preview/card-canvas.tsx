@@ -72,10 +72,10 @@ export function CardCanvas({
         />
       )}
 
-      {/* Overlay pour le contraste */}
+      {/* Overlay for contrast */}
       <div className='absolute inset-0' style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }} />
 
-      {/* Contenu */}
+      {/* Content */}
       <div
         className={cn(
           'relative z-10 flex flex-col h-full w-full p-6',
@@ -101,7 +101,7 @@ export function CardCanvas({
         >
           {isEmpty ? (
             <p className='text-sm' style={{ color: 'rgba(255, 255, 255, 0.5)' }}>
-              Sélectionne des lyrics pour prévisualiser
+              Select lyrics to preview
             </p>
           ) : (
             lyrics.map((line, i) => (

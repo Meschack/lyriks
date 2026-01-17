@@ -9,10 +9,10 @@ interface ProModalProps {
 }
 
 const PRO_FEATURES = [
-  'Suppression du watermark',
-  'Export en haute résolution',
-  'Thèmes exclusifs',
-  'Support prioritaire',
+  'Remove watermark',
+  'High resolution export',
+  'Exclusive themes',
+  'Priority support',
 ]
 
 export function ProModal({ isOpen, onClose }: ProModalProps) {
@@ -40,7 +40,7 @@ export function ProModal({ isOpen, onClose }: ProModalProps) {
             </div>
             <h2 className='text-2xl font-bold'>Lyriks PRO</h2>
           </div>
-          <p className='text-white/80'>Débloque toutes les fonctionnalités premium</p>
+          <p className='text-white/80'>Unlock all premium features</p>
         </div>
 
         {/* Content */}
@@ -60,10 +60,10 @@ export function ProModal({ isOpen, onClose }: ProModalProps) {
           {/* Pricing */}
           <div className='text-center p-4 bg-muted/50 rounded-xl'>
             <p className='text-3xl font-bold'>
-              4,99€
-              <span className='text-base font-normal text-muted-foreground'>/mois</span>
+              $4.99
+              <span className='text-base font-normal text-muted-foreground'>/month</span>
             </p>
-            <p className='text-sm text-muted-foreground mt-1'>ou 39,99€/an (économise 33%)</p>
+            <p className='text-sm text-muted-foreground mt-1'>or $39.99/year (save 33%)</p>
           </div>
 
           {/* CTA */}
@@ -76,11 +76,11 @@ export function ProModal({ isOpen, onClose }: ProModalProps) {
               'shadow-lg shadow-violet-500/25',
             )}
           >
-            Bientôt disponible
+            Coming soon
           </button>
 
           <p className='text-xs text-center text-muted-foreground'>
-            Annule à tout moment. Pas d&apos;engagement.
+            Cancel anytime. No commitment.
           </p>
         </div>
       </div>

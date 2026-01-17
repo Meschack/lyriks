@@ -25,11 +25,11 @@ export function ModeToggle() {
       <TabsList className='w-full grid grid-cols-2'>
         <TabsTrigger value='search' className='gap-2'>
           <Search className='h-4 w-4' />
-          <span>Rechercher</span>
+          <span>Search</span>
         </TabsTrigger>
         <TabsTrigger value='custom' className='gap-2'>
           <PenLine className='h-4 w-4' />
-          <span>Personnalisé</span>
+          <span>Custom</span>
         </TabsTrigger>
       </TabsList>
     </Tabs>

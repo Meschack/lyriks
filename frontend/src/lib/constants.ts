@@ -37,8 +37,8 @@ export const CARD_THEMES = {
     name: 'Dark',
     preview: 'linear-gradient(180deg, #2d3436 0%, #000000 100%)',
   },
-  'solid-black': { name: 'Noir', preview: '#000000' },
-  'solid-white': { name: 'Blanc', preview: '#ffffff' },
+  'solid-black': { name: 'Black', preview: '#000000' },
+  'solid-white': { name: 'White', preview: '#ffffff' },
   'blur-artwork': { name: 'Blur', preview: 'blur' },
   custom: { name: 'Custom', preview: 'custom' },
 } as const

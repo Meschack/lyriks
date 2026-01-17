@@ -19,7 +19,7 @@ export default function HomePage() {
         {/* Header */}
         <header className='text-center mb-8'>
           <h1 className='text-4xl font-bold mb-2'>Lyriks</h1>
-          <p className='text-muted-foreground'>Tes lyrics. Ton style. Ton image.</p>
+          <p className='text-muted-foreground'>Your lyrics. Your style. Your image.</p>
         </header>
 
         {/* Wizard */}

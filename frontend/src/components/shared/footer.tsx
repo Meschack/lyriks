@@ -2,20 +2,20 @@ export function Footer() {
   return (
     <footer className='border-t mt-12 py-6'>
       <div className='container mx-auto px-4 text-center text-sm text-muted-foreground'>
-        <p>Lyriks &mdash; Tes lyrics. Ton style. Ton image.</p>
+        <p>Lyriks &mdash; Your lyrics. Your style. Your image.</p>
         <p className='mt-2'>
-          Propulsé par{' '}
+          Powered by{' '}
           <a
-            href='https://developer.spotify.com/'
+            href='https://docs.genius.com'
             target='_blank'
             rel='noopener noreferrer'
             className='underline hover:text-foreground'
           >
-            Spotify API
+            Rap Genius API
           </a>{' '}
-          et{' '}
+          and{' '}
           <a
-            href='https://lrclib.net/'
+            href='https://lrclib.net'
             target='_blank'
             rel='noopener noreferrer'
             className='underline hover:text-foreground'

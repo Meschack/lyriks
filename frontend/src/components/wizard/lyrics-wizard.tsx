@@ -10,14 +10,14 @@ import { cn } from '@/lib/utils'
 import { ChevronLeft, ChevronRight, Search, FileText, Sparkles, PenLine } from 'lucide-react'
 
 const SEARCH_STEPS = [
-  { id: 1 as WizardStep, label: 'Recherche', icon: Search },
+  { id: 1 as WizardStep, label: 'Search', icon: Search },
   { id: 2 as WizardStep, label: 'Lyrics', icon: FileText },
-  { id: 3 as WizardStep, label: 'Création', icon: Sparkles },
+  { id: 3 as WizardStep, label: 'Create', icon: Sparkles },
 ] as const
 
 const CUSTOM_STEPS = [
-  { id: 1 as WizardStep, label: 'Personnalisé', icon: PenLine },
-  { id: 2 as WizardStep, label: 'Création', icon: Sparkles },
+  { id: 1 as WizardStep, label: 'Custom', icon: PenLine },
+  { id: 2 as WizardStep, label: 'Create', icon: Sparkles },
 ] as const
 
 export function LyricsWizard() {
@@ -77,7 +77,7 @@ export function LyricsWizard() {
           className='flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors'
         >
           <ChevronLeft className='h-4 w-4' />
-          Retour
+          Back
         </button>
       )}
 
@@ -93,8 +93,8 @@ export function LyricsWizard() {
             {!isCustomMode && (
               <>
                 <div className='text-center mb-4'>
-                  <h2 className='text-2xl font-bold mb-2'>Trouve ta chanson</h2>
-                  <p className='text-muted-foreground'>Recherche par titre ou artiste</p>
+                  <h2 className='text-2xl font-bold mb-2'>Find your song</h2>
+                  <p className='text-muted-foreground'>Search by title or artist</p>
                 </div>
                 <SearchSection />
               </>
@@ -104,8 +104,8 @@ export function LyricsWizard() {
             {isCustomMode && (
               <>
                 <div className='text-center mb-4'>
-                  <h2 className='text-2xl font-bold mb-2'>Crée ta carte</h2>
-                  <p className='text-muted-foreground'>Remplis les informations ci-dessous</p>
+                  <h2 className='text-2xl font-bold mb-2'>Create your card</h2>
+                  <p className='text-muted-foreground'>Fill in the information below</p>
                 </div>
                 <CustomCardForm />
               </>
@@ -117,8 +117,8 @@ export function LyricsWizard() {
         {currentStep === 2 && !isCustomMode && (
           <div className='max-w-xl mx-auto space-y-4'>
             <div className='text-center mb-8'>
-              <h2 className='text-2xl font-bold mb-2'>Sélectionne tes lyrics</h2>
-              <p className='text-muted-foreground'>Clique pour choisir un passage (max 8 lignes)</p>
+              <h2 className='text-2xl font-bold mb-2'>Select your lyrics</h2>
+              <p className='text-muted-foreground'>Click to choose a passage (max 8 lines)</p>
             </div>
             <LyricsSection />
 
@@ -133,7 +133,7 @@ export function LyricsWizard() {
                   : 'bg-muted text-muted-foreground cursor-not-allowed',
               )}
             >
-              Créer ma carte
+              Create my card
               <ChevronRight className='h-4 w-4' />
             </button>
           </div>
