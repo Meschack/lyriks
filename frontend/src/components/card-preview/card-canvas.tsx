@@ -66,14 +66,14 @@ export function CardCanvas({
           className='absolute inset-0 bg-cover bg-center'
           style={{
             backgroundImage: `url(${proxiedArtworkUrl})`,
-            filter: 'blur(30px)',
+            filter: 'blur(20px)',
             transform: 'scale(1.1)',
           }}
         />
       )}
 
       {/* Overlay for contrast */}
-      <div className='absolute inset-0' style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }} />
+      <div className='absolute inset-0' style={{ backgroundColor: 'rgba(0, 0, 0, 0.45)' }} />
 
       {/* Content */}
       <div

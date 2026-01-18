@@ -196,12 +196,12 @@ export const SatoriCard = ({
           alt=''
           style={{
             position: 'absolute',
-            top: '-25px',
-            left: '-25px',
-            width: `${dimensions.width + 25}px`,
-            height: `${dimensions.height + 25}px`,
+            top: 0,
+            left: 0,
+            width: `${dimensions.width}px`,
+            height: `${dimensions.height}px`,
             objectFit: 'cover',
-            filter: 'blur(30px)',
+            filter: 'blur(20px)',
           }}
         />
       )}
@@ -214,7 +214,7 @@ export const SatoriCard = ({
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.3)',
+          backgroundColor: 'rgba(0, 0, 0, 0.45)',
         }}
       />
 
