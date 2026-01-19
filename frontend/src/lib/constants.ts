@@ -14,7 +14,7 @@ export const CARD_FORMATS = {
 } as const
 
 // Factor used when rasterizing SVGs for export (e.g. 400x400 → 1600x1600)
-export const EXPORT_SCALE_FACTOR = 6
+export const EXPORT_SCALE_FACTOR = 8
 
 export const CARD_THEMES = {
   'gradient-spotify': {
@@ -52,8 +52,6 @@ export const MIN_CUSTOM_LINES = 1
 export const MAX_TITLE_LENGTH = 100
 export const MAX_ARTIST_LENGTH = 100
 export const MAX_LINE_LENGTH = 200
-export const MAX_IMAGE_UPLOAD_SIZE = 5 * 1024 * 1024 // 5MB
-export const COMPRESSED_IMAGE_MAX_WIDTH = 600
 
 export const SEARCH_DEBOUNCE_MS = 300
 

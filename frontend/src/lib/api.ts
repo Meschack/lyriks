@@ -101,3 +101,17 @@ export async function getImageAsBase64(url: string): Promise<string> {
   const response = await fetchApi<{ data_uri: string }>(`/api/image/base64?${params}`)
   return response.data_uri
 }
+
+export interface ImageValidationResponse {
+  valid: boolean
+  content_type: string | null
+  error: string | null
+}
+
+/**
+ * Validate that a URL points to a valid image
+ */
+export async function validateImageUrl(url: string): Promise<ImageValidationResponse> {
+  const params = new URLSearchParams({ url })
+  return fetchApi<ImageValidationResponse>(`/api/image/validate?${params}`)
+}

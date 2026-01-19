@@ -2,17 +2,17 @@
 
 help:
 	@echo "Available commands:"
-	@echo "  make install    - Install dependencies"
-	@echo "  make dev        - Start development servers"
+	@echo "  make install      - Install dependencies"
+	@echo "  make dev          - Start development servers"
 	@echo "  make dev-backend  - Start backend development server"
 	@echo "  make dev-frontend - Start frontend development server"
-	@echo "  make build      - Build for production"
-	@echo "  make test       - Run tests"
-	@echo "  make lint       - Run linters"
-	@echo "  make clean      - Clean build artifacts"
-	@echo "  make docker-up  - Start Docker containers"
-	@echo "  make docker-down - Stop Docker containers"
-	@echo "  make redis      - Start Redis only"
+	@echo "  make build        - Build for production"
+	@echo "  make test         - Run tests"
+	@echo "  make lint         - Run linters"
+	@echo "  make clean        - Clean build artifacts"
+	@echo "  make docker-up    - Start Docker containers"
+	@echo "  make docker-down  - Stop Docker containers"
+	@echo "  make redis        - Start Redis only"
 
 install:
 	cd backend && pip install -r requirements.txt

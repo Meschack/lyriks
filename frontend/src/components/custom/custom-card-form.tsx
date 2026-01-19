@@ -1,30 +1,30 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import posthog from 'posthog-js'
-import { Image as ImageIcon, Upload, X, ChevronRight, Plus, Trash2 } from 'lucide-react'
+import { Image as ImageIcon, X, ChevronRight, Plus, Trash2, Loader2, Check } from 'lucide-react'
 import { useCardParams } from '@/hooks/use-card-params'
+import { validateImageUrl } from '@/lib/api'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import {
-  MAX_CUSTOM_LINES,
-  MAX_TITLE_LENGTH,
-  MAX_ARTIST_LENGTH,
-  MAX_IMAGE_UPLOAD_SIZE,
-} from '@/lib/constants'
+import { MAX_CUSTOM_LINES, MAX_TITLE_LENGTH, MAX_ARTIST_LENGTH } from '@/lib/constants'
+
+type ImageValidationState = 'idle' | 'validating' | 'valid' | 'invalid'
 
 export function CustomCardForm() {
   const { setCustomCard } = useCardParams()
-  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [title, setTitle] = useState('')
   const [artist, setArtist] = useState('')
   const [artworkUrl, setArtworkUrl] = useState('')
-  const [artworkPreview, setArtworkPreview] = useState<string | null>(null)
   const [lines, setLines] = useState<string[]>([''])
+
+  // Image validation state
+  const [imageValidation, setImageValidation] = useState<ImageValidationState>('idle')
   const [imageError, setImageError] = useState<string | null>(null)
+  const validationTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   // Filter out empty lines for validation and submission
   const nonEmptyLines = lines.map((line) => line.trim()).filter((line) => line.length > 0)
@@ -34,27 +34,71 @@ export function CustomCardForm() {
   const isTitleValid = title.trim().length > 0 && title.length <= MAX_TITLE_LENGTH
   const isArtistValid = artist.trim().length > 0 && artist.length <= MAX_ARTIST_LENGTH
   const isLyricsValid = lineCount >= 1 && lineCount <= MAX_CUSTOM_LINES
+  const isImageValid = !artworkUrl.trim() || imageValidation === 'valid'
 
-  const canSubmit = isTitleValid && isArtistValid && isLyricsValid
+  const canSubmit = isTitleValid && isArtistValid && isLyricsValid && isImageValid
+
+  // Handle artwork URL change with debounced validation
+  const handleArtworkUrlChange = useCallback((value: string) => {
+    setArtworkUrl(value)
+
+    // Clear any pending validation
+    if (validationTimeoutRef.current) {
+      clearTimeout(validationTimeoutRef.current)
+    }
+
+    const url = value.trim()
+
+    if (!url) {
+      setImageValidation('idle')
+      setImageError(null)
+      return
+    }
+
+    // Basic URL format check
+    try {
+      new URL(url)
+    } catch {
+      setImageValidation('invalid')
+      setImageError('Please enter a valid URL')
+      return
+    }
+
+    // Start validation with debounce
+    setImageValidation('validating')
+    setImageError(null)
+
+    validationTimeoutRef.current = setTimeout(async () => {
+      try {
+        const result = await validateImageUrl(url)
+        if (result.valid) {
+          setImageValidation('valid')
+          setImageError(null)
+        } else {
+          setImageValidation('invalid')
+          setImageError(result.error || 'This URL does not point to a valid image')
+        }
+      } catch {
+        setImageValidation('invalid')
+        setImageError('Failed to validate image URL')
+      }
+    }, 500)
+  }, [])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!canSubmit) return
 
     posthog.capture('custom_card_created', {
-      has_artwork: Boolean(artworkPreview || artworkUrl.trim()),
-      artwork_type: artworkPreview?.startsWith('data:')
-        ? 'upload'
-        : artworkUrl.trim()
-          ? 'url'
-          : 'none',
+      has_artwork: Boolean(artworkUrl.trim()),
+      artwork_type: artworkUrl.trim() ? 'url' : 'none',
       lines_count: nonEmptyLines.length,
     })
 
     setCustomCard({
       title: title.trim(),
       artist: artist.trim(),
-      artworkUrl: artworkPreview || artworkUrl.trim() || null,
+      artworkUrl: artworkUrl.trim() || null,
       lines: nonEmptyLines,
     })
   }
@@ -78,57 +122,10 @@ export function CustomCardForm() {
     setLines(newLines)
   }
 
-  const handleArtworkUrlChange = (url: string) => {
-    setArtworkUrl(url)
-    setImageError(null)
-    // Clear preview if using URL
-    if (url.trim()) {
-      setArtworkPreview(url.trim())
-    } else {
-      setArtworkPreview(null)
-    }
-  }
-
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      setImageError('File must be an image')
-      return
-    }
-
-    // Validate file size
-    if (file.size > MAX_IMAGE_UPLOAD_SIZE) {
-      const maxSizeMB = MAX_IMAGE_UPLOAD_SIZE / (1024 * 1024)
-      setImageError(`Image must not exceed ${maxSizeMB}MB`)
-      return
-    }
-
-    setImageError(null)
-
-    // Convert to data URL
-    const reader = new FileReader()
-    reader.onload = () => {
-      if (typeof reader.result === 'string') {
-        setArtworkPreview(reader.result)
-        setArtworkUrl('') // Clear URL input when uploading
-      }
-    }
-    reader.onerror = () => {
-      setImageError('Error loading the image')
-    }
-    reader.readAsDataURL(file)
-  }
-
   const clearArtwork = () => {
     setArtworkUrl('')
-    setArtworkPreview(null)
+    setImageValidation('idle')
     setImageError(null)
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ''
-    }
   }
 
   return (
@@ -165,20 +162,20 @@ export function CustomCardForm() {
         </p>
       </div>
 
-      {/* Artwork */}
+      {/* Artwork URL */}
       <div className='space-y-2'>
-        <Label>Artwork (optional)</Label>
+        <Label>Artwork URL (optional)</Label>
 
-        {/* Preview */}
-        {artworkPreview && (
+        {/* Preview when valid */}
+        {imageValidation === 'valid' && artworkUrl.trim() && (
           <div className='relative w-24 h-24 rounded-lg overflow-hidden border'>
             <img
-              src={artworkPreview}
+              src={artworkUrl.trim()}
               alt='Preview'
               className='w-full h-full object-cover'
               onError={() => {
-                setImageError('Unable to load image')
-                setArtworkPreview(null)
+                setImageValidation('invalid')
+                setImageError('Failed to load image')
               }}
             />
             <button
@@ -192,46 +189,46 @@ export function CustomCardForm() {
         )}
 
         {/* URL input */}
-        {!artworkPreview && (
-          <div className='space-y-3'>
-            <div className='relative'>
-              <ImageIcon className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
-              <Input
-                type='url'
-                placeholder='Image URL...'
-                value={artworkUrl}
-                onChange={(e) => handleArtworkUrlChange(e.target.value)}
-                className='pl-10'
-              />
-            </div>
-
-            <div className='flex items-center gap-3'>
-              <div className='h-px flex-1 bg-border' />
-              <span className='text-xs text-muted-foreground'>or</span>
-              <div className='h-px flex-1 bg-border' />
-            </div>
-
-            {/* File upload */}
-            <input
-              ref={fileInputRef}
-              type='file'
-              accept='image/*'
-              onChange={handleFileUpload}
-              className='hidden'
+        {imageValidation !== 'valid' && (
+          <div className='relative'>
+            <ImageIcon className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
+            <Input
+              type='url'
+              placeholder='https://example.com/image.jpg'
+              value={artworkUrl}
+              onChange={(e) => handleArtworkUrlChange(e.target.value)}
+              className={cn(
+                'pl-10 pr-10',
+                imageValidation === 'invalid' && 'border-destructive focus-visible:ring-destructive',
+              )}
             />
-            <Button
-              type='button'
-              variant='outline'
-              className='w-full'
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <Upload className='h-4 w-4' />
-              Upload an image
-            </Button>
+            {/* Validation indicator */}
+            <div className='absolute right-3 top-1/2 -translate-y-1/2'>
+              {imageValidation === 'validating' && (
+                <Loader2 className='h-4 w-4 animate-spin text-muted-foreground' />
+              )}
+              {imageValidation === 'invalid' && <X className='h-4 w-4 text-destructive' />}
+            </div>
           </div>
         )}
 
+        {/* Error message */}
         {imageError && <p className='text-xs text-destructive'>{imageError}</p>}
+
+        {/* Helper text */}
+        {imageValidation === 'idle' && !imageError && (
+          <p className='text-xs text-muted-foreground'>
+            Paste a direct link to an image (JPG, PNG, GIF, WebP)
+          </p>
+        )}
+
+        {/* Validation success */}
+        {imageValidation === 'valid' && (
+          <p className='text-xs text-green-600 dark:text-green-400 flex items-center gap-1'>
+            <Check className='h-3 w-3' />
+            Valid image URL
+          </p>
+        )}
       </div>
 
       {/* Lyrics - Line by line inputs */}
@@ -284,8 +281,17 @@ export function CustomCardForm() {
 
       {/* Submit */}
       <Button type='submit' disabled={!canSubmit} className='w-full'>
-        Create my card
-        <ChevronRight className='h-4 w-4' />
+        {imageValidation === 'validating' ? (
+          <>
+            <Loader2 className='h-4 w-4 animate-spin' />
+            Validating...
+          </>
+        ) : (
+          <>
+            Create my card
+            <ChevronRight className='h-4 w-4' />
+          </>
+        )}
       </Button>
     </form>
   )
